@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Ćwiczenie audytoryjne: transport, emisje CO₂e, ankieta, obliczenia i raport.">
+  <title>Transport i klimat – ćwiczenie audytoryjne</title>
+  <style>
+    :root {
+      --green: #24784b;
+      --green-dark: #185937;
+      --green-soft: #eaf5ed;
+      --mint: #d8eee0;
+      --navy: #244254;
+      --ink: #25333c;
+      --muted: #64737b;
+      --line: #dce5e0;
+      --bg: #f5f8f6;
+      --white: #ffffff;
+      --bad: #a53c34;
+      --bad-bg: #fff0ee;
+      --shadow: 0 6px 25px rgba(23, 67, 42, .06);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; line-height: 1.55; background: var(--bg); color: var(--ink); }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: var(--green-dark); }
+    :focus-visible { outline: 3px solid #e2ad4d; outline-offset: 3px; }
+    .skip { position: absolute; top: -100px; left: 8px; background: #fff; padding: 8px 12px; z-index: 30; }
+    .skip:focus { top: 8px; }
+    header { background: linear-gradient(110deg, var(--green-dark), var(--green)); color: var(--white); padding: 28px 18px 0; }
+    .head-content { max-width: 1040px; margin: auto; }
+    .eyebrow { margin: 0 0 8px; letter-spacing: 1.5px; font-size: 12px; font-weight: 700; opacity: .88; }
+    h1 { margin: 0 0 6px; font-size: clamp(24px, 3.5vw, 34px); line-height: 1.2; }
+    header .subtitle { margin: 0 0 22px; font-size: 16px; color: #e6f8ec; }
+    nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 0 0 18px; }
+    nav a { display: inline-block; color: #fff; text-decoration: none; padding: 7px 12px; border: 1px solid #ffffff5b; border-radius: 7px; font-size: 14px; font-weight: bold; }
+    nav a:hover { background: #ffffff27; }
+    main { max-width: 1040px; padding: 24px 18px 44px; margin: auto; }
+    section { scroll-margin-top: 18px; }
+    .card { padding: 24px 28px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    h2 { color: var(--green-dark); font-size: 23px; margin: 0 0 12px; }
+    h3 { color: var(--navy); font-size: 18px; margin: 18px 0 10px; }
+    p { margin-top: 0; }
+    .intro { color: var(--muted); }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 18px 0 20px; }
+    .stat { background: var(--green-soft); border: 1px solid #d4e8da; padding: 12px 14px; border-radius: 9px; }
+    .stat span { display: block; color: #53675c; font-size: 13px; }
+    .stat strong { color: var(--green-dark); font-size: 21px; display: block; }
+    .tag { display: inline-block; color: var(--green-dark); background: var(--green-soft); border-radius: 5px; padding: 3px 9px; font-size: 12px; font-weight: 700; }
+    .info { padding: 14px 16px; border-left: 4px solid var(--green); background: var(--green-soft); border-radius: 5px; margin: 17px 0; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    table { border-collapse: collapse; width: 100%; font-size: 15px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    th { background: var(--green-soft); color: var(--green-dark); }
+    tr:last-child td { border-bottom: none; }
+    .table-wrap { overflow-x: auto; }
+    .fine { color: var(--muted); font-size: 13px; }
+    .field { margin-bottom: 19px; }
+    .field > label, .field > .field-label { display: block; font-weight: 700; margin: 0 0 7px; }
+    input[type=text], input[type=number], textarea, select { background: #fff; border: 1px solid #aebeb3; border-radius: 7px; color: var(--ink); width: 100%; padding: 10px 12px; min-height: 44px; }
+    textarea { resize: vertical; min-height: 105px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    fieldset { border: 1px solid var(--line); border-radius: 9px; padding: 12px 16px 14px; margin: 0 0 20px; }
+    legend { color: var(--navy); padding: 0 7px; font-weight: 700; }
+    .choice { display: flex; align-items: start; gap: 10px; padding: 7px 0; font-weight: 400; cursor: pointer; }
+    .choice input { width: 18px; height: 18px; accent-color: var(--green); margin-top: 3px; flex: 0 0 auto; }
+    .calc { display: grid; grid-template-columns: 1fr 220px; align-items: end; gap: 16px; border-bottom: 1px dashed var(--line); padding: 13px 0; }
+    .calc:last-child { border-bottom: 0; }
+    .calc label { font-weight: 700; }
+    .calc small { display: block; color: var(--muted); font-weight: 400; margin-top: 4px; }
+    .formula { margin: 15px 0; padding: 14px 18px; font-size: 17px; background: #f0f5f2; border-radius: 8px; color: var(--navy); }
+    .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+    .btn { background: var(--green); color: #fff; font-weight: 700; padding: 11px 20px; border: 1px solid var(--green); border-radius: 7px; min-height: 46px; }
+    .btn:hover { background: var(--green-dark); }
+    .btn.secondary { background: var(--white); color: var(--green-dark); }
+    .btn.secondary:hover { background: var(--green-soft); }
+    .btn.light { border-color: #cbd6ce; background: #edf1ef; color: var(--ink); }
+    .btn.light:hover { background: #dfe9e2; }
+    .image-preview { margin-top: 15px; border: 1px dashed #b5c4b9; border-radius: 9px; background: #fafdfa; padding: 15px; text-align: center; min-height: 70px; }
+    .image-preview img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 8px auto; border-radius: 7px; }
+    .image-preview.empty { color: var(--muted); }
+    .alert { padding: 12px 15px; border-radius: 8px; border: 1px solid #e9beb8; background: var(--bad-bg); color: var(--bad); margin: 10px 0 0; }
+    .success { padding: 12px 15px; border: 1px solid #bddcc7; border-radius: 8px; background: var(--green-soft); color: var(--green-dark); }
+    .report-heading { display: flex; gap: 12px; justify-content: space-between; flex-wrap: wrap; align-items: center; }
+    .score { display: inline-block; background: var(--green-soft); color: var(--green-dark); padding: 8px 14px; border-radius: 9px; font-size: 18px; font-weight: 700; }
+    .answer { border-left: 4px solid var(--line); padding: 9px 12px; margin: 9px 0; border-radius: 5px; background: #f9fbfa; }
+    .answer.correct { border-color: var(--green); }
+    .answer.wrong { border-color: #d86b61; background: var(--bad-bg); }
+    .answer strong { display: block; }
+    .answer span { color: var(--muted); }
+    .answer b { color: var(--navy); }
+    .report-grid { display: grid; grid-template-columns: 180px 1fr; border-top: 1px solid var(--line); }
+    .report-grid > div { padding: 10px 8px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; white-space: pre-wrap; }
+    .report-grid > div:nth-child(odd) { background: #f5f9f6; font-weight: 700; }
+    .report-image { max-width: 100%; max-height: 350px; display: block; border-radius: 8px; margin-top: 10px; }
+    .context-note { margin: 12px 0 0; padding: 11px 14px; border: 1px solid var(--line); border-radius: 7px; background: #fbfdfb; }
+    .context-note summary { cursor: pointer; font-weight: 700; color: var(--green-dark); }
+    .context-note p { margin: 10px 0 0; }
+    .is-hidden { display: none !important; }
+    #message { margin: 9px 0 0; }
+    footer { background: #e6eee9; text-align: center; color: #4e6257; padding: 20px; font-size: 14px; }
+    @media (max-width: 700px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .columns, .row { grid-template-columns: 1fr; gap: 0; }
+      .calc { grid-template-columns: 1fr; gap: 7px; }
+      .card { padding: 19px 17px; }
+      .report-grid { grid-template-columns: 120px 1fr; }
+    }
+    @media print {
+      body { background: white; font-size: 11pt; }
+      header, footer, #student-area, .no-print { display: none !important; }
+      #results { display: block !important; }
+      main { padding: 0; max-width: 100%; }
+      .card { box-shadow: none; border: 0; padding: 10px 0; margin: 0; break-inside: avoid; }
+      .answer, .report-grid > div { break-inside: avoid; }
+      h2 { margin: 0 0 8px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#student-area">Przejdź do ćwiczenia</a>
+  <header>
+    <div class="head-content">
+      <p class="eyebrow">OCHRONA ŚRODOWISKA · ĆWICZENIA AUDYTORYJNE</p>
+      <h1>Emisja gazów cieplarnianych z transportu</h1>
+      <p> Ćwiczenie: ankieta, trzy obliczenia i raport</p>
+      <nav aria-label="Nawigacja po ćwiczeniu">
+        <a href="#o-temacie">O temacie</a>
+        <a href="#ankieta">Ankieta</a>
+        <a href="#obliczenia">Obliczenia</a>
+        <a href="#wykres">Wykres</a>
+        <a href="#results" id="results-link">Wyniki</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div id="student-area">
+      <section id="o-temacie" class="card">
+        <span class="tag">WPROWADZENIE</span>
+        <h2>O temacie</h2>
+        <p>Transport samochodowy i autobusowy powoduje emisję gazów cieplarnianych. Wielkość emisji zależy m.in. od długości podróży, rodzaju pojazdu i liczby pasażerów. Ograniczenie emisji można uzyskać przez zmianę środka transportu lub zmniejszenie liczby przejazdów.</p>
+        <p class="intro">W tym ćwiczeniu przeanalizujesz, jaki efekt przyniesie przesiadka <strong>100 studentów</strong> z samochodów, którymi dotychczas podróżowali pojedynczo, do autobusów. Następnie zapiszesz swoją opinię i dołączysz pomysł na plakat promujący ekologiczny transport.</p>
+        <div class="stats" aria-label="Najważniejsze dane">
+          <div class="stat"><span>Dojeżdżający</span><strong>1000</strong></div>
+          <div class="stat"><span>Dystans (obie strony)</span><strong>20 km</strong></div>
+          <div class="stat"><span>Dni dojazdów</span><strong>200</strong></div>
+          <div class="stat"><span>Emisja z dojazdów</span><strong>497 t/rok</strong></div>
+        </div>
+        <div class="columns">
+          <div>
+            <h3>Struktura dojazdów</h3>
+            <div class="table-wrap"><table><thead><tr><th>Środek transportu</th><th>Studenci</th></tr></thead><tbody><tr><td>Samochód – 1 osoba</td><td>500</td></tr><tr><td>Samochód – 2 osoby</td><td>200</td></tr><tr><td>Autobus</td><td>250</td></tr><tr><td>Rower i pieszo</td><td>50</td></tr></tbody></table></div>
+          </div>
+          <div>
+            <h3>Wskaźniki emisji do obliczeń</h3>
+            <div class="table-wrap"><table><thead><tr><th>Środek transportu</th><th>Wskaźnik</th></tr></thead><tbody><tr><td>Samochód</td><td>0,18 kg CO₂e / pojazdokm</td></tr><tr><td>Autobus</td><td>0,065 kg CO₂e / pasażerokm</td></tr><tr><td>Rower i pieszo</td><td>0 w przyjętym modelu</td></tr></tbody></table></div>
+          </div>
+        </div>
+        <div class="info"><strong>Uwaga metodyczna:</strong> wszystkie wskaźniki są <strong>hipotetycznymi danymi dydaktycznymi</strong>, a nie obowiązującymi współczynnikami dla Polski. CO₂e oznacza ekwiwalent dwutlenku węgla. Model obejmuje emisję eksploatacyjną przypisaną do przejazdów; nie uwzględnia produkcji pojazdów, budowy infrastruktury ani łańcucha dostaw paliw. Wartość „0” dla roweru i ruchu pieszego oznacza brak bezpośrednich emisji pojazdowych w tym modelu.</div>
+        <details class="context-note"><summary>Skąd pochodzi emisja początkowa 497 t CO₂e/rok?</summary><p>500 studentów podróżujących pojedynczo w samochodach: <strong>360 t/rok</strong>. Kolejnych 200 studentów podróżujących po dwie osoby w samochodzie (100 pojazdów): <strong>72 t/rok</strong>. 250 studentów podróżujących autobusem: <strong>65 t/rok</strong>. Rower i pieszo: <strong>0 t/rok</strong> w modelu. Razem <strong>360 + 72 + 65 + 0 = 497 t CO₂e/rok</strong>. Zakładamy jednakowy dystans 20 km dziennie w obie strony przez 200 dni dojazdów w roku.</p></details>
+      </section>
+
+      <form id="exercise" novalidate>
+        <section id="ankieta" class="card">
+          <span class="tag">CZĘŚĆ 1</span>
+          <h2>Ankieta</h2>
+          <div class="row">
+            <div class="field"><label for="name">Imię i nazwisko *<br></label><br><input id="name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="Wpisz imię i nazwisko"></div>
+            <div class="field"><label for="group">Numer zespołu * - wybierz cokolwiek (ważne w zajęciach stacjonarnych)</label><select id="group" name="group" required><option value="">Wybierz zespół</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select></div>
+          </div>
+          <fieldset id="transport-options"><legend>Z jakich środków transportu korzystasz? (możesz wybrać kilka)</legend>
+            <label class="choice"><input type="checkbox" name="transport" value="Samochód osobowy">Samochód osobowy</label>
+            <label class="choice"><input type="checkbox" name="transport" value="Transport publiczny">Transport publiczny</label>
+            <label class="choice"><input type="checkbox" name="transport" value="Rower">Rower</label>
+            <label class="choice"><input type="checkbox" name="transport" value="Pieszo">Pieszo</label>
+          </fieldset>
+          <fieldset><legend>Które działanie Twoim zdaniem najlepiej ograniczy emisje z dojazdów?</legend>
+            <label class="choice"><input type="radio" name="redukcja" value="Przejście na transport publiczny" required>Przejście na transport publiczny</label>
+            <label class="choice"><input type="radio" name="redukcja" value="Wspólne przejazdy samochodem">Wspólne przejazdy samochodem</label>
+            <label class="choice"><input type="radio" name="redukcja" value="Rozwój infrastruktury rowerowej">Rozwój infrastruktury rowerowej</label>
+            <label class="choice"><input type="radio" name="redukcja" value="Ograniczenie liczby dojazdów">Ograniczenie liczby dojazdów</label>
+          </fieldset>
+          <div class="field"><label for="opinion">Uzasadnij swój wybór w 2–4 zdaniach *</label><textarea id="opinion" name="opinion" required maxlength="1500" placeholder="Napisz, dlaczego wybrane działanie jest skuteczne i jakie może mieć ograniczenia..."></textarea></div>
+        </section>
+
+        <section id="obliczenia" class="card">
+          <span class="tag">CZĘŚĆ 2</span>
+          <h2>Proste zadanie obliczeniowe</h2>
+          <p><strong>Sytuacja:</strong> 100 studentów dotychczas dojeżdżało samochodami w pojedynkę. Każdy z nich pokonywał 20 km dziennie przez 200 dni w roku. Teraz te same osoby zaczynają korzystać z autobusów.</p>
+          <div class="formula"><strong>Wzory:</strong><br>Dystans roczny jednej osoby = 20 km/dzień × 200 dni/rok = 4000 km/rok.<br>Samochód: emisja [t CO₂e/rok] = liczba <strong>pojazdów</strong> × dystans roczny [km/rok] × 0,18 [kg CO₂e/pojazdokm] ÷ 1000.<br>Autobus: emisja [t CO₂e/rok] = liczba <strong>pasażerów</strong> × dystans roczny [km/rok] × 0,065 [kg CO₂e/pasażerokm] ÷ 1000.</div>
+          <p class="fine">Wpisz trzy wyniki liczbowe. Możesz użyć przecinka albo kropki dziesiętnej. Nie wpisuj jednostek w polach.</p>
+          <div class="calc"><label for="car-emission">1. Ile ton CO₂e rocznie emitowały samochody tych 100 osób?<small>100 × 4000 × 0,18 ÷ 1000</small></label><input type="text" id="car-emission" name="car" inputmode="decimal" required placeholder="Wynik w tonach"></div>
+          <div class="calc"><label for="bus-emission">2. Ile ton CO₂e rocznie przypiszemy ich przejazdom autobusem?<small>100 × 4000 × 0,065 ÷ 1000</small></label><input type="text" id="bus-emission" name="bus" inputmode="decimal" required placeholder="Wynik w tonach"></div>
+          <div class="calc"><label for="reduction">3. O ile ton CO₂e rocznie zmniejszy się emisja?<small>Emisja samochodów − emisja autobusów</small></label><input type="text" id="reduction" name="reduction" inputmode="decimal" required placeholder="Wynik w tonach"></div>
+          <div class="info"><strong>Założenia:</strong> 100 kierowców oznacza początkowo 100 samochodów (jedna osoba na pojazd). Dla autobusu wskaźnik jest podany na <strong>pasażerokilometr</strong>, dlatego nie dzielimy go drugi raz przez liczbę pasażerów. Przyjmujemy stałą umowną emisję na pasażerokilometr oraz dostępność miejsc w autobusach. Wyliczona zmiana opisuje <strong>bilans emisji przypisanej do podróży</strong>, a nie gwarantowaną fizyczną zmianę emisji całej floty autobusowej.</div>
+        </section>
+
+        <section id="wykres" class="card">
+          <span class="tag">CZĘŚĆ 3</span>
+          <h2>Dołącz przygotowany plakat</h2>
+          <p class="intro">Temat - mozliwości zmniejszenia emisji spalin.</p>
+          <div class="field"><label for="image-file">Wybierz obraz (PNG, JPG lub WEBP, maks. 5 MB)</label><input id="image-file" type="file" accept="image/png,image/jpeg,image/webp"></div>
+          <div id="image-preview" class="image-preview empty" aria-live="polite">Nie wybrano obrazu.</div>
+        </section>
+
+        <div class="card no-print">
+          <div class="buttons">
+            <button type="submit" class="btn" id="submit-btn">Sprawdź i pokaż podsumowanie</button>
+            <button type="reset" class="btn secondary">Wyczyść formularz</button>
+          </div>
+          <p id="message" role="status" aria-live="polite"></p>
+          <p class="fine">Dane nie są wysyłane do Internetu.</p>
+        </div>
+      </form>
+    </div>
+
+    <section id="results" class="card is-hidden" tabindex="-1" aria-labelledby="results-heading">
+      <div class="report-heading"><div><span class="tag">WYNIKI</span><h2 id="results-heading">Podsumowanie ćwiczenia</h2></div><div id="score" class="score">0/3 poprawne</div></div>
+      <p class="intro">Poniżej znajduje się zestawienie odpowiedzi. Część opisową ocenia prowadzący.</p>
+      <div id="report-fields" class="report-grid" aria-label="Dane ankiety"></div>
+      <h3>Sprawdzenie obliczeń</h3>
+      <div id="report-calculations"></div>
+      <p class="fine">Wynik to szacunek oparty na umownych wskaźnikach. W rzeczywistości efekty zmiany sposobu dojazdu zależą m.in. od zapełnienia autobusu i zmian liczby kursów.</p>
+      <p id="overall-comment" class="success"></p>
+      <div id="report-image-container" class="is-hidden"><h3>Załączony wykres</h3><img id="report-image" class="report-image" alt="Wykres dołączony przez studenta"></div>
+      <div class="buttons no-print"><button id="back-btn" type="button" class="btn secondary">Wróć do formularza</button><button id="print-btn" type="button" class="btn">Drukuj / zapisz PDF</button><button id="text-btn" type="button" class="btn light">Zapisz odpowiedzi TXT</button></div>
+    </section>
+  </main>
+  <footer>Ochrona środowiska • emisje gazów cieplarnianych z transportu</footer>
+  <script>
+    'use strict';
+    // Wszystkie style i funkcje aplikacji są zapisane w tym samym pliku HTML.
+    const form = document.getElementById('exercise');
+    const preview = document.getElementById('image-preview');
+    const imageInput = document.getElementById('image-file');
+    const results = document.getElementById('results');
+    const studentArea = document.getElementById('student-area');
+    const msg = document.getElementById('message');
+    let attachedImage = '';
+    let lastReport = null;
+
+    function appendText(parent, name, value) {
+      const el = document.createElement('div');
+      el.textContent = value;
+      parent.appendChild(el);
+      return el;
+    }
+    function parseNumber(value) {
+      const clean = String(value).trim().replace(/\s/g, '').replace(',', '.');
+      return clean === '' ? NaN : Number(clean);
+    }
+    function formatNumber(value) {
+      return Number(value).toLocaleString('pl-PL', { maximumFractionDigits: 2 });
+    }
+    function inputValue(id) {
+      return document.getElementById(id).value.trim();
+    }
+    function showError(message, element) {
+      msg.className = 'alert';
+      msg.textContent = message;
+      element?.focus();
+      element?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+    function clearMessage() {
+      msg.className = '';
+      msg.textContent = '';
+    }
+
+    // Podgląd obrazu na tej samej stronie, bez localStorage i wysyłania plików.
+    imageInput.addEventListener('change', async () => {
+      attachedImage = '';
+      preview.textContent = 'Nie wybrano obrazu.';
+      preview.classList.add('empty');
+      const file = imageInput.files[0];
+      if (!file) return;
+      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+        alert('Wybierz plik PNG, JPG lub WEBP o rozmiarze nieprzekraczającym 5 MB.');
+        imageInput.value = '';
+        return;
+      }
+      try {
+        attachedImage = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error('Nie udało się odczytać obrazu.'));
+          reader.readAsDataURL(file);
+        });
+        const image = document.createElement('img');
+        image.alt = 'Podgląd załączonego wykresu';
+        image.src = attachedImage;
+        preview.replaceChildren(image);
+        preview.classList.remove('empty');
+      } catch (_error) {
+        preview.textContent = 'Nie udało się odczytać pliku.';
+        attachedImage = '';
+      }
+    });
+
+    // Wartości hipotetyczne. Jedna osoba na samochód => 100 osób = 100 pojazdów.
+    // Samochód: kg CO₂e / pojazdokm; autobus: kg CO₂e / pasażerokm.
+    const model = Object.freeze({ students: 100, dailyKm: 20, days: 200, carPerVehicleKm: 0.18, busPerPassengerKm: 0.065 });
+    const annualKm = model.dailyKm * model.days;
+    const carEmissions = model.students * annualKm * model.carPerVehicleKm / 1000;
+    const busEmissions = model.students * annualKm * model.busPerPassengerKm / 1000;
+    const avoidedEmissions = carEmissions - busEmissions;
+    const questions = [
+      { id: 'car-emission', label: 'Emisja samochodów', expected: carEmissions, explanation: '100 pojazdów × 4000 km/rok × 0,18 kg CO₂e/pojazdokm ÷ 1000 = 72 t CO₂e/rok' },
+      { id: 'bus-emission', label: 'Emisja przypisana do przejazdów autobusem', expected: busEmissions, explanation: '100 pasażerów × 4000 km/rok × 0,065 kg CO₂e/pasażerokm ÷ 1000 = 26 t CO₂e/rok' },
+      { id: 'reduction', label: 'Zmniejszenie emisji', expected: avoidedEmissions, explanation: '72 − 26 = 46 t CO₂e/rok' }
+    ];
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearMessage();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const checked = Array.from(form.querySelectorAll('input[name="transport"]:checked'));
+      if (!checked.length) {
+        return showError('Zaznacz co najmniej jeden środek transportu.', document.querySelector('#transport-options input'));
+      }
+      for (const q of questions) {
+        const element = document.getElementById(q.id);
+        const value = parseNumber(element.value);
+        if (!Number.isFinite(value) || value < 0) {
+          return showError('W każdym polu obliczeniowym wpisz poprawną liczbę nieujemną.', element);
+        }
+      }
+      const report = {
+        name: inputValue('name'),
+        group: inputValue('group'),
+        transport: checked.map(input => input.value),
+        selectedAction: form.querySelector('input[name="redukcja"]:checked').value,
+        opinion: inputValue('opinion'),
+        answers: questions.map(q => {
+          const number = parseNumber(inputValue(q.id));
+          return { label: q.label, provided: number, expected: q.expected,
+            correct: Math.abs(number - q.expected) <= 0.1, explanation: q.explanation };
+        }),
+        image: attachedImage
+      };
+      lastReport = report;
+      renderReport(report);
+      results.classList.remove('is-hidden');
+      studentArea.classList.add('is-hidden');
+      results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      results.focus({ preventScroll: true });
+    });
+
+    function renderReport(report) {
+      const fields = document.getElementById('report-fields');
+      fields.replaceChildren();
+      const items = [
+        ['Imię i nazwisko', report.name],
+        ['Zespół', report.group],
+        ['Środki transportu', report.transport.join(', ')],
+        ['Wybrana metoda redukcji', report.selectedAction],
+        ['Uzasadnienie', report.opinion]
+      ];
+      for (const [label, value] of items) {
+        appendText(fields, 'div', label);
+        appendText(fields, 'div', value);
+      }
+      const container = document.getElementById('report-calculations');
+      container.replaceChildren();
+      let points = 0;
+      for (const answer of report.answers) {
+        const box = document.createElement('div');
+        box.className = 'answer ' + (answer.correct ? 'correct' : 'wrong');
+        const title = document.createElement('strong');
+        title.textContent = answer.label + ': ' + (answer.correct ? '✓ Poprawnie' : '✗ Sprawdź obliczenie');
+        box.appendChild(title);
+        const entered = document.createElement('span');
+        entered.textContent = 'Twoja odpowiedź: ' + formatNumber(answer.provided) + ' t CO₂e/rok';
+        box.appendChild(entered);
+        box.appendChild(document.createElement('br'));
+        const expected = document.createElement('b');
+        expected.textContent = 'Rozwiązanie: ' + answer.explanation;
+        box.appendChild(expected);
+        container.appendChild(box);
+        if (answer.correct) points += 1;
+      }
+      document.getElementById('score').textContent = points + '/3 poprawne';
+      document.getElementById('overall-comment').textContent =
+        points === 3
+          ? 'Wszystkie obliczenia są poprawne. W przyjętym modelu emisja przypisana do przejazdów tych 100 osób maleje o 46 t CO₂e/rok (o 63,9% względem ich wyjściowych 72 t/rok). Odpowiada to około 9,3% początkowej emisji ze wszystkich analizowanych dojazdów studentów (497 t/rok).'
+          : 'Porównaj swoje odpowiedzi z podstawieniami pokazanymi powyżej i popraw obliczenia w formularzu.';
+      const imageArea = document.getElementById('report-image-container');
+      if (report.image) {
+        document.getElementById('report-image').src = report.image;
+        imageArea.classList.remove('is-hidden');
+      } else {
+        document.getElementById('report-image').removeAttribute('src');
+        imageArea.classList.add('is-hidden');
+      }
+    }
+
+    function backToForm(event) {
+      if (event) event.preventDefault();
+      studentArea.classList.remove('is-hidden');
+      results.classList.add('is-hidden');
+      clearMessage();
+      document.getElementById('ankieta').scrollIntoView({ behavior: 'smooth' });
+    }
+    document.getElementById('back-btn').addEventListener('click', backToForm);
+    document.getElementById('results-link').addEventListener('click', (event) => {
+      event.preventDefault();
+      if (lastReport) {
+        studentArea.classList.add('is-hidden');
+        results.classList.remove('is-hidden');
+        results.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        document.getElementById('ankieta').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+    document.querySelectorAll('nav a:not(#results-link)').forEach(link => link.addEventListener('click', () => {
+      studentArea.classList.remove('is-hidden');
+      results.classList.add('is-hidden');
+    }));
+    document.getElementById('print-btn').addEventListener('click', () => window.print());
+    document.getElementById('text-btn').addEventListener('click', () => {
+      if (!lastReport) return;
+      const r = lastReport;
+      const correct = r.answers.filter(a => a.correct).length;
+      const lines = [
+        'OCHRONA ŚRODOWISKA — EMISJE Z TRANSPORTU',
+        'WYNIKI ĆWICZENIA SPA', '',
+        'Imię i nazwisko: ' + r.name,
+        'Zespół: ' + r.group,
+        'Środki transportu: ' + r.transport.join(', '),
+        'Wybrana metoda redukcji: ' + r.selectedAction,
+        'Uzasadnienie: ' + r.opinion,
+        '', 'OBLICZENIA (' + correct + '/3 poprawne):',
+        ...r.answers.map(a => a.label + ': ' + formatNumber(a.provided) + ' t CO₂e/rok | ' + (a.correct ? 'poprawnie' : 'do poprawy') + ' | ' + a.explanation),
+        '', 'Załączono wykres: ' + (r.image ? 'tak (obraz dostępny w raporcie HTML/PDF)' : 'nie')
+      ];
+      const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'wyniki_transport_zespol_' + r.group + '.txt';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    });
+    form.addEventListener('reset', () => {
+      attachedImage = '';
+      lastReport = null;
+      preview.textContent = 'Nie wybrano obrazu.';
+      preview.classList.add('empty');
+      document.getElementById('report-image').removeAttribute('src');
+      clearMessage();
+    });
+  </script>
+</body>
+</html>
